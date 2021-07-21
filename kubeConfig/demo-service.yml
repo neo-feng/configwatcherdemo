@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+     run: demo
+  name: demo-service
+  annotations:
+    boot.spring.io/actuator: http://:8080/actuator
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+     run: demo
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo
+spec:
+  selector:
+    matchLabels:
+      run: demo
+  replicas: 1
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        run: demo
+    spec:
+      serviceAccountName: spring-cloud-kubernetes-configuration-watcher
+      containers:
+      - name: demo-service
+        image: neofeng/demoapp:1.4
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "default"
+        - name: TZ
+          value: "Asia/Shanghai"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: demo-service

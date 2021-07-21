@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: demo-service
+  cloud:
+    kubernetes:
+      config:
+        #enabled: true
+        sources:
+          - namespace: default
+            name: ${spring.application.name}
+      # reload:
+      #   enabled: true
+      #   mode: event # event or polling with specifed interval
+      #   strategy: refresh # 1. refresh - default, 2. restart_context 3. shutdown
+
+      # secrets:
+      #   name: default-name
+      #   enabled: true
+      #   namespace: default-namespace
+      #   sources:
+      #   # Spring Cloud Kubernetes looks up a Secret named s1 in namespace default-namespace
+      #   - name: s1
+      #   # Spring Cloud Kubernetes looks up a Secret named default-name in whatever namespace n2
+      #   - namespace: n2
+      #   # Spring Cloud Kubernetes looks up a Secret named s3 in namespace n3
+      #   - namespace: n3
+      #     name: s3
+
+server:
+  port: 8080
